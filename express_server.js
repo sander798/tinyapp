@@ -34,8 +34,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  urlDatabase[generateRandomString()] = req.body.longURL; // add the POST request body to urlDatabase
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const tinyURL = generateRandomString();
+  urlDatabase[tinyURL] = req.body.longURL; // add the POST request body to urlDatabase
+  res.redirect("/urls/" + tinyURL);
 });
 
 app.get("/urls/new", (req, res) => {
