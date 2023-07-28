@@ -49,7 +49,11 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls/:id/edit", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newLongURL; // Update database with edited URL
+  // For some reason this check is needed to stop blank overwrites when entering /urls/:id
+  if (req.body.newLongURL) {
+    urlDatabase[req.params.id] = req.body.newLongURL; // Update database with edited URL
+  }
+  
   res.redirect("/urls/" + req.params.id);
 });
 
