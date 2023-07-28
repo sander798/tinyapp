@@ -54,7 +54,7 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id]; // add the POST request body to urlDatabase
+  delete urlDatabase[req.params.id]; // Delete the url from the database
   res.redirect("/urls");
 });
 
