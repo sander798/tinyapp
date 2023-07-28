@@ -20,6 +20,7 @@
       <% if (username) {%>
         <form class="form-inline" action="/logout" method="POST">
           <label>Logged in as: <%= username %></label>
+          <button type="submit" class="btn btn-primary">Logout</button>
         </form>
       <% } else { %>
         <form class="form-inline" action="/login" method="POST">
