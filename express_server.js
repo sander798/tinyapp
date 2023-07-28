@@ -35,7 +35,7 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   const tinyURL = generateRandomString();
-  urlDatabase[tinyURL] = req.body.longURL; // add the POST request body to urlDatabase
+  urlDatabase[tinyURL] = req.body.longURL; // Add the POST request body to urlDatabase
   res.redirect("/urls/" + tinyURL);
 });
 
@@ -48,7 +48,12 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:id/delete", (req, res) => { 
+app.post("/urls/:id/edit", (req, res) => {
+  urlDatabase[req.params.id] = req.body.newLongURL; // Update database with edited URL
+  res.redirect("/urls/" + req.params.id);
+});
+
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id]; // add the POST request body to urlDatabase
   res.redirect("/urls");
 });
