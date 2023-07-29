@@ -136,17 +136,12 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = findUserFromData("email", req.body.email);
 
-  if (!user){
-    res.status(403);
-    return;
-  }
-
-  if (user.password === req.body.password) {
+  if (user && user.password === req.body.password) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
   }
   
-  res.status(403);
+  res.status(403).send("Incorrect email or password.");
 });
 
 app.post("/logout", (req, res) => {
