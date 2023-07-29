@@ -1,6 +1,7 @@
 const express = require("express");
 const crypto = require("crypto");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -24,7 +25,8 @@ const users = {
   testUser: {
     id: "testUser",
     email: "testUser@test.com",
-    password: "correctbatteryhorsestaple",
+    password: "$2a$10$Q3T742NMxmons95v9Zv.W.LbXxRattl65lWYjPdZGi9VoT0PuAKGK",
+    //correctbatteryhorsestaple
   },
 };
 
@@ -204,18 +206,19 @@ app.post("/register", (req, res) => {
     || findUserFromData("email", req.body.newEmail) // Check for duplicate email
   ) {
     res.status(400).send("Unable to register user.");
-    //res.redirect("/urls");
     return;
   }
   
   const newID = generateRandomString();
+  const hashedPassword = bcrypt.hashSync(req.body.newPassword, 10);
   users[newID] = {
     id: newID,
     email: req.body.newEmail,
-    password: req.body.newPassword,
+    password: hashedPassword,
   };
   res.cookie("user_id", newID);
   res.redirect("/urls");
+  console.log(users);
 });
 
 app.get("/login", (req, res) => {
@@ -231,7 +234,7 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   const user = findUserFromData("email", req.body.email);
 
-  if (user && user.password === req.body.password) {
+  if (user && bcrypt.compareSync(req.body.password, user.password)) {
     res.cookie("user_id", user.id);
     res.redirect("/urls");
   }
