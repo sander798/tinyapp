@@ -47,6 +47,37 @@ function findUserFromData(key, data) {
   return null;
 }
 
+function urlsForUser(id) {
+  if (!id) {
+    return null;
+  }
+  
+  const userURLs = {};
+  
+  for (let i in urlDatabase) {
+    if (urlDatabase[i].userID === id) {
+      userURLs[i] = {
+        longURL: urlDatabase[i].longURL,
+        userID: urlDatabase[i].userID,
+      };
+    }
+  }
+  
+  return userURLs;
+}
+
+function doesUserOwnURL(userID, shortURL) {
+  const userURLs = urlsForUser(userID);
+  
+  for (let i in userURLs) {
+    if (i === shortURL && userURLs[i].userID == userID) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -60,7 +91,12 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]], };
+  if (!req.cookies["user_id"]) { // If a user is not logged in, send login reminder
+    res.status(400).send("You need to be logged in to view your URLs!");
+    return;
+  }
+  
+  const templateVars = { urls: urlsForUser(req.cookies["user_id"]), user: users[req.cookies["user_id"]], };
   res.render("urls_index", templateVars);
 });
 
@@ -89,6 +125,14 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  if (!req.cookies["user_id"]) { // If a user is not logged in, redirect to /urls
+    res.status(400).send("You need to be logged in to view this!");
+    return;
+  } else if (!doesUserOwnURL(req.cookies["user_id"], req.params.id)) {
+    res.status(400).send("This isn't one of your URLs!");
+    return;
+  }
+  
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
