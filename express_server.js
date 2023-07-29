@@ -162,6 +162,17 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  if (!req.cookies["user_id"]) { // If a user is not logged in, give error message
+    res.status(400).send("You need to be logged in to delete this!");
+    return;
+  } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
+    res.status(400).send("No such URL to delete!");
+    return;
+  } else if (!doesUserOwnURL(req.cookies["user_id"], req.params.id)) {
+    res.status(400).send("This isn't one of your URLs!");
+    return;
+  }
+  
   delete urlDatabase[req.params.id]; // Delete the url from the database
   res.redirect("/urls");
 });
