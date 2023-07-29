@@ -103,6 +103,11 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  if (req.cookies["user_id"]) { // If a user is already logged in, redirect to /urls
+    res.redirect("/urls");
+    return;
+  }
+  
   const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("register", templateVars);
 });
@@ -129,6 +134,11 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
+  if (req.cookies["user_id"]) { // If a user is already logged in, redirect to /urls
+    res.redirect("/urls");
+    return;
+  }
+  
   const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("login", templateVars);
 });
