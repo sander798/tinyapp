@@ -134,7 +134,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const user = findUserFromData[req.body.email];
+  const user = findUserFromData("email", req.body.email);
 
   if (!user){
     res.status(403);
