@@ -113,8 +113,8 @@ app.post("/register", (req, res) => {
     || !req.body.newPassword
     || findUserFromData("email", req.body.newEmail) // Check for duplicate email
   ) {
-    res.status(400);
-    res.redirect("/urls");
+    res.status(400).send("Unable to register user.");
+    //res.redirect("/urls");
     return;
   }
   
