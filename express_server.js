@@ -128,9 +128,25 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]], };
+  res.render("login", templateVars);
+});
+
 app.post("/login", (req, res) => {
-  //res.cookie("user_id", req.body.user_id);
-  res.redirect("/urls");
+  const user = findUserFromData[req.body.email];
+
+  if (!user){
+    res.status(400);
+    return;
+  }
+
+  if (user.password === req.body.password) {
+    res.cookie("user_id", user.id);
+    res.redirect("/urls");
+  }
+  
+  res.status(400);
 });
 
 app.post("/logout", (req, res) => {
