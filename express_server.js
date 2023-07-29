@@ -14,6 +14,14 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  testUser: {
+    id: "testUser",
+    email: "testUser@test.com",
+    password: "correctbatteryhorsestaple",
+  },
+};
+
 function generateRandomString() {
   return crypto.randomBytes(3).toString("hex");
 }
@@ -31,7 +39,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"], };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]], };
   res.render("urls_index", templateVars);
 });
 
@@ -42,7 +50,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { username: req.cookies["username"], };
+  const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("urls_new", templateVars);
 });
 
@@ -50,7 +58,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"],
+    user: users[req.cookies["user_id"]],
   };
   res.render("urls_show", templateVars);
 });
@@ -80,22 +88,28 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { username: req.cookies["username"], };
+  const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("register", templateVars);
 });
 
 app.post("/register", (req, res) => {
-  //res.cookie("username", req.body.username);
+  const newID = generateRandomString();
+  users[newID] = {
+    id: newID,
+    email: req.body.newEmail,
+    password: req.body.newPassword,
+  };
+  res.cookie("user_id", newID);
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  //res.cookie("user_id", req.body.user_id);
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
