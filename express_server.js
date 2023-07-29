@@ -2,6 +2,7 @@ const express = require("express");
 const crypto = require("crypto");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
+const { findUserFromData, urlsForUser, doesUserOwnURL } = require("./helpers");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -36,52 +37,6 @@ const users = {
 
 function generateRandomString() {
   return crypto.randomBytes(3).toString("hex");
-}
-
-// Return the user corresponding to the given data from the given list of users
-function findUserFromData(key, data, userList) {
-  if (!key || !data) {
-    return null;
-  }
-  
-  for (let i in userList) {
-    if (userList[i][key] === data){
-      return userList[i];
-    }
-  }
-  
-  return null;
-}
-
-function urlsForUser(userID, urlDatabase) {
-  if (!userID) {
-    return null;
-  }
-  
-  const userURLs = {};
-  
-  for (let i in urlDatabase) {
-    if (urlDatabase[i].userID === userID) {
-      userURLs[i] = {
-        longURL: urlDatabase[i].longURL,
-        userID: urlDatabase[i].userID,
-      };
-    }
-  }
-  
-  return userURLs;
-}
-
-function doesUserOwnURL(userID, shortURL, urlDatabase) {
-  const userURLs = urlsForUser(userID, urlDatabase);
-  
-  for (let i in userURLs) {
-    if (i === shortURL && userURLs[i].userID == userID) {
-      return true;
-    }
-  }
-  
-  return false;
 }
 
 app.get("/", (req, res) => {
