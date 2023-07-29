@@ -38,30 +38,30 @@ function generateRandomString() {
   return crypto.randomBytes(3).toString("hex");
 }
 
-// Return the user corresponding to the given data
-function findUserFromData(key, data) {
+// Return the user corresponding to the given data from the given list of users
+function findUserFromData(key, data, userList) {
   if (!key || !data) {
     return null;
   }
   
-  for (let i in users) {
-    if (users[i][key] === data){
-      return users[i];
+  for (let i in userList) {
+    if (userList[i][key] === data){
+      return userList[i];
     }
   }
   
   return null;
 }
 
-function urlsForUser(id) {
-  if (!id) {
+function urlsForUser(userID, urlDatabase) {
+  if (!userID) {
     return null;
   }
   
   const userURLs = {};
   
   for (let i in urlDatabase) {
-    if (urlDatabase[i].userID === id) {
+    if (urlDatabase[i].userID === userID) {
       userURLs[i] = {
         longURL: urlDatabase[i].longURL,
         userID: urlDatabase[i].userID,
@@ -72,8 +72,8 @@ function urlsForUser(id) {
   return userURLs;
 }
 
-function doesUserOwnURL(userID, shortURL) {
-  const userURLs = urlsForUser(userID);
+function doesUserOwnURL(userID, shortURL, urlDatabase) {
+  const userURLs = urlsForUser(userID, urlDatabase);
   
   for (let i in userURLs) {
     if (i === shortURL && userURLs[i].userID == userID) {
@@ -103,7 +103,7 @@ app.get("/urls", (req, res) => {
   }
   
   const templateVars = { 
-    urls: urlsForUser(req.session["user_id"]),
+    urls: urlsForUser(req.session["user_id"], urlDatabase),
     user: users[req.session["user_id"]],
   };
   res.render("urls_index", templateVars);
@@ -137,7 +137,7 @@ app.get("/urls/:id", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, redirect to /urls
     res.status(400).send("You need to be logged in to view this!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -157,7 +157,7 @@ app.post("/urls/:id/edit", (req, res) => {
   } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to edit!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -177,7 +177,7 @@ app.post("/urls/:id/delete", (req, res) => {
   } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to delete!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -210,7 +210,7 @@ app.post("/register", (req, res) => {
   if (
     !req.body.newEmail
     || !req.body.newPassword
-    || findUserFromData("email", req.body.newEmail) // Check for duplicate email
+    || findUserFromData("email", req.body.newEmail, users) // Check for duplicate email
   ) {
     res.status(400).send("Unable to register user.");
     return;
@@ -238,7 +238,7 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  const user = findUserFromData("email", req.body.email);
+  const user = findUserFromData("email", req.body.email, users);
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
     req.session.user_id = user.id;
