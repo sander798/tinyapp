@@ -26,6 +26,21 @@ function generateRandomString() {
   return crypto.randomBytes(3).toString("hex");
 }
 
+// Return the user corresponding to the given data
+function findUserFromData(key, data) {
+  if (!key || !data) {
+    return null;
+  }
+  
+  for (let i in users) {
+    if (users[i][key] === data){
+      return users[i];
+    }
+  }
+  
+  return null;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -93,6 +108,16 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  if (
+    !req.body.newEmail
+    || !req.body.newPassword
+    || findUserFromData("email", req.body.newEmail) // Check for duplicate email
+  ) {
+    res.status(400);
+    res.redirect("/urls");
+    return;
+  }
+  
   const newID = generateRandomString();
   users[newID] = {
     id: newID,
