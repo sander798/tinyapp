@@ -1,6 +1,6 @@
 const express = require("express");
 const crypto = require("crypto");
-const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
 
 const app = express();
@@ -8,7 +8,11 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["can'tguessme"],
+  maxAge: 60 * 60 * 1000,
+}));
 
 const urlDatabase = {
   "b2xVn2": {
@@ -93,17 +97,20 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (!req.cookies["user_id"]) { // If a user is not logged in, send login reminder
+  if (!req.session["user_id"]) { // If a user is not logged in, send login reminder
     res.status(400).send("You need to be logged in to view your URLs!");
     return;
   }
   
-  const templateVars = { urls: urlsForUser(req.cookies["user_id"]), user: users[req.cookies["user_id"]], };
+  const templateVars = { 
+    urls: urlsForUser(req.session["user_id"]),
+    user: users[req.session["user_id"]],
+  };
   res.render("urls_index", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  if (!req.cookies["user_id"]) { // If a user is not logged in, send login reminder
+  if (!req.session["user_id"]) { // If a user is not logged in, send login reminder
     res.status(400).send("You need to be logged in to create new URLs!");
     return;
   }
@@ -111,26 +118,26 @@ app.post("/urls", (req, res) => {
   const tinyURL = generateRandomString();
   urlDatabase[tinyURL] = { // Add the POST request body to urlDatabase
     longURL: req.body.longURL,
-    userID: req.cookies["user_id"],
+    userID: req.session["user_id"],
   };
   res.redirect("/urls/" + tinyURL);
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies["user_id"]) { // If a user is not logged in, redirect to /urls
+  if (!req.session["user_id"]) { // If a user is not logged in, redirect to /urls
     res.redirect("/urls");
     return;
   }
   
-  const templateVars = { user: users[req.cookies["user_id"]], };
+  const templateVars = { user: users[req.session["user_id"]], };
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (!req.cookies["user_id"]) { // If a user is not logged in, redirect to /urls
+  if (!req.session["user_id"]) { // If a user is not logged in, redirect to /urls
     res.status(400).send("You need to be logged in to view this!");
     return;
-  } else if (!doesUserOwnURL(req.cookies["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -138,19 +145,19 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL,
-    user: users[req.cookies["user_id"]],
+    user: users[req.session["user_id"]],
   };
   res.render("urls_show", templateVars);
 });
 
 app.post("/urls/:id/edit", (req, res) => {  
-  if (!req.cookies["user_id"]) { // If a user is not logged in, give error message
+  if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to edit this!");
     return;
   } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to edit!");
     return;
-  } else if (!doesUserOwnURL(req.cookies["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -164,13 +171,13 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
-  if (!req.cookies["user_id"]) { // If a user is not logged in, give error message
+  if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to delete this!");
     return;
   } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to delete!");
     return;
-  } else if (!doesUserOwnURL(req.cookies["user_id"], req.params.id)) {
+  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -190,12 +197,12 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if (req.cookies["user_id"]) { // If a user is already logged in, redirect to /urls
+  if (req.session["user_id"]) { // If a user is already logged in, redirect to /urls
     res.redirect("/urls");
     return;
   }
   
-  const templateVars = { user: users[req.cookies["user_id"]], };
+  const templateVars = { user: users[req.session["user_id"]], };
   res.render("register", templateVars);
 });
 
@@ -216,18 +223,17 @@ app.post("/register", (req, res) => {
     email: req.body.newEmail,
     password: hashedPassword,
   };
-  res.cookie("user_id", newID);
+  req.session.user_id = newID;
   res.redirect("/urls");
-  console.log(users);
 });
 
 app.get("/login", (req, res) => {
-  if (req.cookies["user_id"]) { // If a user is already logged in, redirect to /urls
+  if (req.session["user_id"]) { // If a user is already logged in, redirect to /urls
     res.redirect("/urls");
     return;
   }
   
-  const templateVars = { user: users[req.cookies["user_id"]], };
+  const templateVars = { user: users[req.session["user_id"]], };
   res.render("login", templateVars);
 });
 
@@ -235,7 +241,7 @@ app.post("/login", (req, res) => {
   const user = findUserFromData("email", req.body.email);
 
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
-    res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     res.redirect("/urls");
   }
   
