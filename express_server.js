@@ -162,11 +162,8 @@ app.post("/urls/:id/edit", (req, res) => {
     return;
   }
   
-  // For some reason this check is needed to stop blank overwrites when entering /urls/:id
-  if (req.body.newLongURL) {
-    urlDatabase[req.params.id].longURL = req.body.newLongURL; // Update database with edited URL
-  }
-  
+  // Update database with edited URL
+  urlDatabase[req.params.id].longURL = req.body.newLongURL;
   res.redirect("/urls/" + req.params.id);
 });
 
@@ -239,7 +236,7 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   const user = findUserFromData("email", req.body.email, users);
-
+  
   if (user && bcrypt.compareSync(req.body.password, user.password)) {
     req.session.user_id = user.id;
     res.redirect("/urls");
