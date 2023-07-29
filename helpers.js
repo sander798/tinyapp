@@ -1,7 +1,7 @@
 // Returns the user corresponding to the given data from the given list of users
 const findUserFromData = function(key, data, userList) {
   if (!key || !data) {
-    return null;
+    return undefined;
   }
   
   for (let i in userList) {
@@ -10,7 +10,7 @@ const findUserFromData = function(key, data, userList) {
     }
   }
   
-  return null;
+  return undefined;
 }
 
 // Returns the urls made by the user

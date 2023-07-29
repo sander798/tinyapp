@@ -27,6 +27,6 @@ describe('findUserFromData', function() {
     const user = findUserFromData("email", "bad@example.com", testUsers);
     const expectedUserID = "userRandomID";
     
-    assert.notDeepEqual(testUsers[expectedUserID], user);
+    assert.deepEqual(undefined, user);
   });
 });
