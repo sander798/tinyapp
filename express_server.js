@@ -137,7 +137,7 @@ app.post("/login", (req, res) => {
   const user = findUserFromData[req.body.email];
 
   if (!user){
-    res.status(400);
+    res.status(403);
     return;
   }
 
@@ -146,7 +146,7 @@ app.post("/login", (req, res) => {
     res.redirect("/urls");
   }
   
-  res.status(400);
+  res.status(403);
 });
 
 app.post("/logout", (req, res) => {
