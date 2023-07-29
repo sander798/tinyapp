@@ -117,8 +117,8 @@ app.post("/urls/:id/edit", (req, res) => {
     return;
   }
   
-  // Update database with edited URL
-  if (req.body.newLongURL){ // For some reason this check prevents blank overwrites
+  // For some reason this check is needed to prevent blank overwrites when getting /urls/:id
+  if (req.body.newLongURL){
     urlDatabase[req.params.id].longURL = req.body.newLongURL;
   }
   
