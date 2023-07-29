@@ -59,12 +59,22 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
+  if (!req.cookies["user_id"]) { // If a user is not logged in, send login reminder
+    res.status(400).send("You need to be logged in to create new URLs!");
+    return;
+  }
+  
   const tinyURL = generateRandomString();
   urlDatabase[tinyURL] = req.body.longURL; // Add the POST request body to urlDatabase
   res.redirect("/urls/" + tinyURL);
 });
 
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies["user_id"]) { // If a user is not logged in, redirect to /urls
+    res.redirect("/urls");
+    return;
+  }
+  
   const templateVars = { user: users[req.cookies["user_id"]], };
   res.render("urls_new", templateVars);
 });
