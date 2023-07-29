@@ -118,7 +118,10 @@ app.post("/urls/:id/edit", (req, res) => {
   }
   
   // Update database with edited URL
-  urlDatabase[req.params.id].longURL = req.body.newLongURL;
+  if (req.body.newLongURL){ // For some reason this check prevents blank overwrites
+    urlDatabase[req.params.id].longURL = req.body.newLongURL;
+  }
+  
   res.redirect("/urls/" + req.params.id);
 });
 
