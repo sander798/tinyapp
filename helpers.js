@@ -5,13 +5,13 @@ const findUserFromData = function(key, data, userList) {
   }
   
   for (let i in userList) {
-    if (userList[i][key] === data){
+    if (userList[i][key] === data) {
       return userList[i];
     }
   }
   
   return undefined;
-}
+};
 
 // Returns the urls made by the user
 const urlsForUser = function(userID, urlDatabase) {
@@ -31,20 +31,20 @@ const urlsForUser = function(userID, urlDatabase) {
   }
   
   return userURLs;
-}
+};
 
 // Returns whether the user made the given short URL
 const doesUserOwnURL = function(userID, shortURL, urlDatabase) {
   const userURLs = urlsForUser(userID, urlDatabase);
   
   for (let i in userURLs) {
-    if (i === shortURL && userURLs[i].userID == userID) {
+    if (i === shortURL && userURLs[i].userID === userID) {
       return true;
     }
   }
   
   return false;
-}
+};
 
 module.exports = {
   findUserFromData,

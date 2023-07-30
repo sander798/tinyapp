@@ -18,11 +18,11 @@ app.use(cookieSession({
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
-    userID: "testUser"
+    userID: "testUser",
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
-    userID: "testUser"
+    userID: "testUser",
   },
 };
 
@@ -35,9 +35,9 @@ const users = {
   },
 };
 
-function generateRandomString() {
+const generateRandomString = function() {
   return crypto.randomBytes(3).toString("hex");
-}
+};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -58,7 +58,7 @@ app.get("/urls", (req, res) => {
     return;
   }
   
-  const templateVars = { 
+  const templateVars = {
     urls: urlsForUser(req.session["user_id"], urlDatabase),
     user: users[req.session["user_id"]],
   };
@@ -106,7 +106,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:id/edit", (req, res) => {  
+app.post("/urls/:id/edit", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to edit this!");
     return;
@@ -119,7 +119,7 @@ app.post("/urls/:id/edit", (req, res) => {
   }
   
   // For some reason this check is needed to prevent blank overwrites when getting /urls/:id
-  if (req.body.newLongURL){
+  if (req.body.newLongURL) {
     urlDatabase[req.params.id].longURL = req.body.newLongURL;
   }
   
