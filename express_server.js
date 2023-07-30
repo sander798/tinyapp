@@ -52,8 +52,9 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (!req.session["user_id"]) { // If a user is not logged in, send login reminder
-    res.status(400).send("You need to be logged in to view your URLs!");
+  if (!req.session["user_id"]) { // If a user is not logged in, go to login page
+    //res.status(400).send("You need to be logged in to view your URLs!");
+    res.redirect("/login");
     return;
   }
   
