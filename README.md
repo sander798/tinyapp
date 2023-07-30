@@ -10,4 +10,4 @@ Start the server:
 
 `node express_server.js`
 
-Then navigate to [localhost:8080/urls](localhost:8080/urls) in your web browser.
+Then navigate to `localhost:8080/urls` in your web browser.
