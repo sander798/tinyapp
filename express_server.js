@@ -81,7 +81,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:id/edit", (req, res) => {
+app.post("/urls/:id", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to edit this!");
     return;
