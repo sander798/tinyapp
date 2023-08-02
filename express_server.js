@@ -8,6 +8,7 @@ const {
   urlsForUser,
   doesUserOwnURL
 } = require("./helpers");
+const { urlDatabase, users } = require("./data");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -22,7 +23,7 @@ app.use(cookieSession({
 
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
@@ -103,7 +104,8 @@ app.post("/urls/:id/edit", (req, res) => {
     urlDatabase[req.params.id].longURL = req.body.newLongURL;
   }
   
-  res.redirect("/urls/" + req.params.id);
+  //res.redirect("/urls/" + req.params.id); <- I think this is more user-friendly...
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
@@ -131,6 +133,8 @@ app.get("/u/:id", (req, res) => {
   
   if (!longURL) {
     res.status(400).send("No such URL in the database!");
+    res.redirect("/urls");
+    return;
   }
   
   res.redirect(longURL);
