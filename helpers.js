@@ -4,9 +4,9 @@ const findUserFromData = function(key, data, userList) {
     return undefined;
   }
   
-  for (let i in userList) {
-    if (userList[i][key] === data) {
-      return userList[i];
+  for (let userKey in userList) {
+    if (userList[userKey][key] === data) {
+      return userList[userKey];
     }
   }
   
@@ -21,11 +21,11 @@ const urlsForUser = function(userID, urlDatabase) {
   
   const userURLs = {};
   
-  for (let i in urlDatabase) {
-    if (urlDatabase[i].userID === userID) {
-      userURLs[i] = {
-        longURL: urlDatabase[i].longURL,
-        userID: urlDatabase[i].userID,
+  for (let entry in urlDatabase) {
+    if (urlDatabase[entry].userID === userID) {
+      userURLs[entry] = {
+        longURL: urlDatabase[entry].longURL,
+        userID: urlDatabase[entry].userID,
       };
     }
   }
@@ -37,8 +37,8 @@ const urlsForUser = function(userID, urlDatabase) {
 const doesUserOwnURL = function(userID, shortURL, urlDatabase) {
   const userURLs = urlsForUser(userID, urlDatabase);
   
-  for (let i in userURLs) {
-    if (i === shortURL && userURLs[i].userID === userID) {
+  for (let urlKey in userURLs) {
+    if (urlKey === shortURL && userURLs[urlKey].userID === userID) {
       return true;
     }
   }
@@ -47,6 +47,7 @@ const doesUserOwnURL = function(userID, shortURL, urlDatabase) {
 };
 
 module.exports = {
+  generateRandomString,
   findUserFromData,
   urlsForUser,
   doesUserOwnURL,
