@@ -129,15 +129,12 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id].longURL;
-  
-  if (!longURL) {
+  if (!urlDatabase[req.params.id]) {
     res.status(400).send("No such URL in the database!");
-    res.redirect("/urls");
     return;
   }
   
-  res.redirect(longURL);
+  res.redirect(urlDatabase[req.params.id].longURL);
 });
 
 app.get("/register", (req, res) => {
