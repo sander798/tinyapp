@@ -2,6 +2,15 @@
 
 A full stack web app built with Node and Express that allows users to shorten long URLs (à la bit.ly).
 
+## Requirements
+
+ - bcryptjs
+ - cookie-session
+ - ejs
+ - express
+ 
+These can be installed in the progam's directory with `npm install bcryptjs cookie-session ejs express`.
+
 ## Usage
 
 **Run it:**
