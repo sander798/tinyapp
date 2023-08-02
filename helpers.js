@@ -1,3 +1,8 @@
+// Returns a random 6-character string
+const generateRandomString = function() {
+  return crypto.randomBytes(3).toString("hex");
+};
+
 // Returns the user corresponding to the given data from the given list of users
 const findUserFromData = function(key, data, userList) {
   if (!key || !data) {

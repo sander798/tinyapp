@@ -2,7 +2,12 @@ const express = require("express");
 const crypto = require("crypto");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
-const { findUserFromData, urlsForUser, doesUserOwnURL } = require("./helpers");
+const { 
+  generateRandomString,
+  findUserFromData,
+  urlsForUser,
+  doesUserOwnURL
+} = require("./helpers");
 
 const app = express();
 const PORT = 8080; // default port 8080
@@ -15,40 +20,9 @@ app.use(cookieSession({
   maxAge: 60 * 60 * 1000,
 }));
 
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "testUser",
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com",
-    userID: "testUser",
-  },
-};
-
-const users = {
-  testUser: {
-    id: "testUser",
-    email: "testUser@test.com",
-    password: "$2a$10$Q3T742NMxmons95v9Zv.W.LbXxRattl65lWYjPdZGi9VoT0PuAKGK",
-    //correctbatteryhorsestaple
-  },
-};
-
-const generateRandomString = function() {
-  return crypto.randomBytes(3).toString("hex");
-};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.get("/urls", (req, res) => {
