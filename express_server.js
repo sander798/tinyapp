@@ -67,7 +67,9 @@ app.get("/urls/:id", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, redirect to /urls
     res.status(400).send("You need to be logged in to view this!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
+  }
+  
+  if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -84,10 +86,14 @@ app.post("/urls/:id/edit", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to edit this!");
     return;
-  } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
+  }
+  
+  if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to edit!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
+  }
+  
+  if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
@@ -104,10 +110,14 @@ app.post("/urls/:id/delete", (req, res) => {
   if (!req.session["user_id"]) { // If a user is not logged in, give error message
     res.status(400).send("You need to be logged in to delete this!");
     return;
-  } else if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
+  }
+  
+  if (!Object.keys(urlDatabase).includes(req.params.id)) { // Check for existing URL
     res.status(400).send("No such URL to delete!");
     return;
-  } else if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
+  }
+  
+  if (!doesUserOwnURL(req.session["user_id"], req.params.id, urlDatabase)) {
     res.status(400).send("This isn't one of your URLs!");
     return;
   }
