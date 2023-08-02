@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 // Returns a random 6-character string
 const generateRandomString = function() {
   return crypto.randomBytes(3).toString("hex");
